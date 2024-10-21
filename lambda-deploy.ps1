@@ -17,11 +17,18 @@ if (-not $functionName -or -not $region) {
     exit 1
 }
 
-# Update AWS Lambda function code
+# Package Lambda function
+Write-Host "Packaging Lambda function..."
+Compress-Archive -Path index.js -DestinationPath function.zip
+
+# Deploy to AWS Lambda
 Write-Host "Deploying to AWS Lambda..."
-& aws lambda update-function-code `
+$functionName = $env:secrets.AWS_LAMBDA_FUNCTION_PROD
+$region = $env:secrets.AWS_REGION 
+
+& $awsCliPath lambda update-function-code `
     --function-name $functionName `
     --zip-file fileb://function.zip `
     --region $region `
-    --access-key $env:AWS_ACCESS_KEY_ID `
-    --secret-key $env:AWS_SECRET_ACCESS_KEY
+    --access-key $env:secrets.AWS_ACCESS_KEY_ID `
+    --secret-key $env:secrets.AWS_SECRET_ACCESS_KEY
