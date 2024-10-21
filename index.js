@@ -6,6 +6,6 @@ exports.handler = async (event) => {
         headers: {
             "Content-Type": "text/plain"
         },
-        body: "Hello India123456789"
+        body: "Hello India"
     };
 };
