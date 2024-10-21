@@ -11,6 +11,12 @@ Compress-Archive -Path "index.js" -DestinationPath "function.zip"
 $functionName = $env:AWS_LAMBDA_FUNCTION_PROD
 $region = $env:AWS_REGION
 
+# Check if function name and region are not empty
+if (-not $functionName -or -not $region) {
+    Write-Host "Error: AWS_LAMBDA_FUNCTION_PROD or AWS_REGION is not set."
+    exit 1
+}
+
 # Update AWS Lambda function code
 Write-Host "Deploying to AWS Lambda..."
 & aws lambda update-function-code `
