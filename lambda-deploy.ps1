@@ -1,3 +1,8 @@
+# Check if function.zip already exists and delete it if so
+if (Test-Path -Path "function.zip") {
+    Remove-Item -Path "function.zip" -Force
+}
+
 # Package Lambda function
 Write-Host "Packaging Lambda function..."
 Compress-Archive -Path "index.js" -DestinationPath "function.zip"
