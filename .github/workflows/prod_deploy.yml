@@ -23,7 +23,10 @@ jobs:
         aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
         aws configure set region "${{ secrets.AWS_REGION }}"
 
+    - name: Zip the function code
+      run: |
+        Compress-Archive -Path * -DestinationPath function.zip
+
     - name: Deploy to Lambda
       run: |
-        zip -r function.zip .
         aws lambda update-function-code --function-name test1 --zip-file fileb://function.zip
