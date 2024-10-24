@@ -29,4 +29,11 @@ jobs:
 
     - name: Deploy to Lambda
       run: |
-        aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_PROD }}" --zip-file fileb://function.zip
+        if [ "${{ github.event.inputs.environment }}" == "prod" ]; then
+          aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_PROD }}" --zip-file fileb://Function.zip
+        elif [ "${{ github.event.inputs.environment }}" == "stage" ]; then
+          aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_STAGE }}" --zip-file fileb://Function.zip
+        else
+          echo "Invalid environment specified. Please use 'prod' or 'stage'."
+          exit 1
+        fi
