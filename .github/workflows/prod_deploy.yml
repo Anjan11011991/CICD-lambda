@@ -7,6 +7,10 @@ on:
         description: 'Deployment environment (prod, stage)'
         required: true
         default: 'stage'
+      branch:
+        description: 'Branch to deploy from'
+        required: true
+        default: 'main'  # Specify your default branch here
 
 jobs:
   deploy:
@@ -15,6 +19,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.inputs.branch }}  # Check out the specified branch
 
     - name: Set up AWS CLI
       run: |
