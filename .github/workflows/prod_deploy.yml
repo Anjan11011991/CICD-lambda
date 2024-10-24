@@ -25,8 +25,8 @@ jobs:
 
     - name: Zip the function code
       run: |
-        Compress-Archive -Path * -DestinationPath function.zip
+        Compress-Archive -Path * -DestinationPath function.zip  # Corrected the destination file name
 
     - name: Deploy to Lambda
       run: |
-        aws lambda update-function-code --function-name test1 --zip-file fileb://function.zip
+        aws lambda update-function-code --function-name "${{ secrets.AWS_LAMBDA_FUNCTION_PROD }}" --zip-file fileb://function.zip
