@@ -25,7 +25,7 @@ jobs:
 
     - name: Zip the function code
       run: |
-        Compress-Archive -Path * -DestinationPath ${{ secrets.AWS_LAMBDA_FUNCTION_PROD }}.zip  # Corrected the destination file name
+        Compress-Archive -Path * -DestinationPath Function.zip
 
     - name: Deploy to Lambda
       run: |
