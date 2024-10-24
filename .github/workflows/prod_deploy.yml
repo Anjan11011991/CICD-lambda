@@ -3,7 +3,13 @@ name: Deploy Lambda Function
 on:
   push:
     branches:
-      - main  # Change this to your main branch
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment (prod, stage)'
+        required: true
+        default: 'stage'
 
 jobs:
   deploy:
@@ -15,13 +21,13 @@ jobs:
 
     - name: Set up AWS CLI
       run: |
-        choco install awscli
+        choco install awscli || exit 1
 
     - name: Configure AWS Credentials
       run: |
-        aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}"
-        aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-        aws configure set region "${{ secrets.AWS_REGION }}"
+        aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" || exit 1
+        aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}" || exit 1
+        aws configure set region "${{ secrets.AWS_REGION }}" || exit 1
 
     - name: Zip the function code
       run: |
@@ -29,17 +35,18 @@ jobs:
 
     - name: Deploy to Lambda
       run: |
-        if (${{ github.event.inputs.environment }} -eq "prod") {
-          $FUNCTION_NAME = "${{ secrets.AWS_LAMBDA_FUNCTION_PROD }}"
-        } elseif (${{ github.event.inputs.environment }} -eq "stage") {
-          $FUNCTION_NAME = "${{ secrets.AWS_LAMBDA_FUNCTION_STAGE }}"
+        $envName = "${{ github.event.inputs.environment }}"
+        if ($envName -eq 'prod') {
+          $functionName = "${{ secrets.AWS_LAMBDA_FUNCTION_PROD }}"
+        } elseif ($envName -eq 'stage') {
+          $functionName = "${{ secrets.AWS_LAMBDA_FUNCTION_STAGE }}"
         } else {
-          Write-Host "Invalid environment. Please use 'prod' or 'stage'."
+          Write-Host "Invalid environment specified. Use 'prod', or 'stage'."
           exit 1
         }
-        
-        aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://Function.zip
+
+        aws lambda update-function-code --function-name $functionName --zip-file fileb://Function.zip || exit 1
 
     - name: Clean up
       run: |
-        Remove-Item Function.zip
+        Remove-Item Function.zip -Force
